@@ -1,13 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { useUser } from "@supabase/auth-helpers-react";
+import { createBrowserClient } from "@supabase/ssr";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { User } from "@supabase/supabase-js";
+
+interface FoodLog {
+  date: string;
+  kalorier: number;
+}
 
 export default function ProgressPage() {
-  const user = useUser();
-  const [data, setData] = useState([]);
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  const [data, setData] = useState<FoodLog[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     const fetch = async () => {
