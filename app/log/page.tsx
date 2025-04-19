@@ -1,15 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useEffect } from "react";
+import { createBrowserClient } from "@supabase/ssr";
 import { foodList } from "@/data/foods";
-import { useUser } from "@supabase/auth-helpers-react";
+import { User } from "@supabase/supabase-js";
 
 export default function LogPage() {
   const [selected, setSelected] = useState<any>(null);
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
-  const user = useUser();
+  const [user, setUser] = useState<User | null>(null);
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   const handleLog = async () => {
     if (!selected || !amount || !user) return;
