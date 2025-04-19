@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 export async function signOutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   redirect("/");
 }
 
@@ -25,7 +25,7 @@ export async function signInAction(formData: FormData) {
     return { error: error.message };
   }
 
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   redirect("/");
 }
 
@@ -43,7 +43,7 @@ export async function signUpAction(formData: FormData) {
     return { error: error.message };
   }
 
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   redirect("/");
 }
 
@@ -51,15 +51,14 @@ export async function resetPasswordAction(formData: FormData) {
   const supabase = await createClient();
   const email = formData.get("email") as string;
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/update-password`,
-  });
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
 
   if (error) {
     return { error: error.message };
   }
 
-  return { message: "Check your email for the password reset link" };
+  revalidatePath("/");
+  redirect("/");
 }
 
 export async function updatePasswordAction(formData: FormData) {
@@ -74,6 +73,6 @@ export async function updatePasswordAction(formData: FormData) {
     return { error: error.message };
   }
 
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   redirect("/");
 }
