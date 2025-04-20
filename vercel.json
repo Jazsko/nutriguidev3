@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm install && npm install tailwindcss postcss autoprefixer && npm run build",
+  "buildCommand": "npm install --force && npm install tailwindcss@3.3.0 postcss@8 autoprefixer@10.0.1 --save-dev && npm install @radix-ui/react-label@2.0.2 @radix-ui/react-slot@1.0.2 class-variance-authority@0.7.0 clsx@2.1.0 tailwind-merge@2.2.1 lucide-react@0.330.0 next-themes@0.2.1 && npm run build",
   "installCommand": "npm install --force",
   "framework": "nextjs"
 } 
