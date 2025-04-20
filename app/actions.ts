@@ -6,15 +6,22 @@ import { redirect } from "next/navigation";
 
 export async function signOutAction() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
-  revalidatePath("/");
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/", "layout");
   redirect("/");
 }
 
 export async function signInAction(formData: FormData) {
-  const supabase = await createClient();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -25,14 +32,15 @@ export async function signInAction(formData: FormData) {
     return { error: error.message };
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   redirect("/");
 }
 
 export async function signUpAction(formData: FormData) {
-  const supabase = await createClient();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -43,27 +51,30 @@ export async function signUpAction(formData: FormData) {
     return { error: error.message };
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   redirect("/");
 }
 
 export async function resetPasswordAction(formData: FormData) {
-  const supabase = await createClient();
   const email = formData.get("email") as string;
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/update-password`,
+  });
 
   if (error) {
     return { error: error.message };
   }
 
-  revalidatePath("/");
-  redirect("/");
+  return { success: true };
 }
 
 export async function updatePasswordAction(formData: FormData) {
-  const supabase = await createClient();
   const password = formData.get("password") as string;
+
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.updateUser({
     password,
@@ -73,6 +84,6 @@ export async function updatePasswordAction(formData: FormData) {
     return { error: error.message };
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   redirect("/");
 }
