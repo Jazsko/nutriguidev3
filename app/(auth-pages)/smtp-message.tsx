@@ -1,7 +1,19 @@
+"use client";
+
 import { ArrowUpRight, InfoIcon } from "lucide-react";
 import Link from "next/link";
 
 export function SmtpMessage() {
+  if (process.env.NEXT_PUBLIC_SMTP_DISABLED === "true") {
+    return (
+      <div className="mt-4 p-4 bg-yellow-100 text-yellow-700 rounded-md text-sm">
+        <p>
+          SMTP is disabled. Password reset emails will not be sent. Please contact
+          the administrator to reset your password.
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="bg-muted/50 px-5 py-3 border rounded-md flex gap-4">
       <InfoIcon size={16} className="mt-0.5" />
